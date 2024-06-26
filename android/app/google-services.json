@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1089689706267",
+    "firebase_url": "https://medical-device-73848-default-rtdb.firebaseio.com",
+    "project_id": "medical-device-73848",
+    "storage_bucket": "medical-device-73848.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089689706267:android:08dcdb73e5e5e61536fdbe",
+        "android_client_info": {
+          "package_name": "com.thermocyclemonitor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPHVUf3CvtApXx9FNNvTIaD_2Qy3Fbr-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

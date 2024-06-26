@@ -1,0 +1,18 @@
+export default {
+    black: '#000',
+    backgroundColor: '#8b71ac',
+    buttonText: '#FFFFFF',
+    rightContainer: '#f3edeb',
+    primary: "#008080",
+    GRAY: '#f7f7f7',
+    LIGHTGRAY: '#C7C7C7',
+    DARKGRAY: '#5E5E5E',
+    CGRAY: '#ececec',
+    OFFLINE_GRAY: '#535353',
+    TEXTINPUT_BG: '#F9FAFB',
+    AlertNote: "#E6F4F1",
+    disabledColr: "#dddddd",
+    sliderThumb: '#23374E',
+    slider: '#23374E',
+    sliderBottomText: '#23374E',
+};
