@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Splash, Login, Signup, Home, Scanner, AddDetails } from './app/screens';
+import { Splash, Login, Signup, Home, Scanner, AddDetails, ForgetPassword } from './app/screens';
 import { AuthContext } from './shared/core/Context';
 import { Alert } from 'react-native';
 
@@ -136,6 +136,14 @@ const Apps = props => {
             title: 'Signup',
           }}
           component={Signup}
+        />
+        <RootStack.Screen
+          name="ForgetPassword"
+          options={{
+            headerShown: false,
+            title: 'Forget Password',
+          }}
+          component={ForgetPassword}
         />
         <RootStack.Screen
           name="Scanner"

@@ -17,9 +17,10 @@ export const SignIn = async(email, pwd, deviceId) => {
       .ref(`devices/${deviceId}`)
       .once('value')
       .then(snapshot => {
+        let data = snapshot.val()
         // let {ListenerLanguage, SpeakerLanguage} = snapshot.val()
         console.log("Login Data Fetched Successfully:",snapshot.val())
-        if(snapshot.val() == null){
+        if(data == null || data?.email.toLowerCase() != email.toLowerCase()){
             SignOut()
             Alert.alert("Invalid Device Id!")
         }
@@ -41,10 +42,10 @@ export const SignIn = async(email, pwd, deviceId) => {
       if (err2.code == "auth/invalid-credential") {
         Alert.alert("Invalid Credentials!")
       }
-      if (err2.code == "auth/internal-error"){
+      else if (err2.code == "auth/internal-error"){
         Alert.alert("This Email doesn't exists!")
       }
-      if (err2.code === "auth/invalid-email") { 
+      else if (err2.code === "auth/invalid-email") { 
         Alert.alert('Email is invalid!'); 
       }
       else{
@@ -59,30 +60,32 @@ export const SignUp = async(email, pwd, deviceId, payload) => {
     var result = null;
     await auth().createUserWithEmailAndPassword(email, pwd)
     .then(async(res) => { 
+        Alert.alert("Signed Up Successfully!")
         console.log('User account created & signed in!',res);
-        await database()
-        .ref(`devices/${deviceId}`)
-        .set(payload)
-        .then((res) => {
-            Alert.alert("Signed Up Successfully!")
-            console.log("Signup Data Saved Successfully:",res)
-            result = true;
-        })
-        .catch((error) => {
-            Alert.alert('Authentication Failed. Please try again later!') 
-            console.log('Error Reading Signup Date',error)
-            SignOut()
-        });
+        result = true;
+        // await database()
+        // .ref(`devices/${deviceId}`)
+        // .set(payload)
+        // .then((res) => {
+        //     Alert.alert("Signed Up Successfully!")
+        //     console.log("Signup Data Saved Successfully:",res)
+        //     result = true;
+        // })
+        // .catch((error) => {
+        //     Alert.alert('Authentication Failed. Please try again later!') 
+        //     console.log('Error Reading Signup Date',error)
+        //     SignOut()
+        // });
     })
     .catch(error => {
         console.log("Error Firebase Auth",error)
         if (error.code === "auth/email-already-in-use") { 
             Alert.alert('This Email is already in use!')
         }
-        if (error.code === "auth/invalid-email") { 
+        else if (error.code === "auth/invalid-email") { 
             Alert.alert('Email is invalid!') 
         }
-        if (error.code == "auth/weak-password")
+        else if (error.code == "auth/weak-password")
         {
             Alert.alert('This Password is Weak')
         }

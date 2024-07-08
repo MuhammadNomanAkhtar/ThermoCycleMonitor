@@ -4,3 +4,4 @@ export {default as Signup} from './auth/Signup';
 export {default as Home} from './home/Home';
 export {default as Scanner} from './home/Scanner'
 export {default as AddDetails} from './home/AddDetails'
+export {default as ForgetPassword} from './auth/ForgetPassword'

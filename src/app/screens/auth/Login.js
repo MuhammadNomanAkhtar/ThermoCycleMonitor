@@ -6,7 +6,7 @@ import RoseInput from '../../components/Elements/RoseInput';
 import { images } from '../../assets/pngs/ImagesList';
 import RoseButton from '../../components/Elements/RoseButton';
 import { SignIn } from '../../../shared/firebase/FirebaseAuthentication';
-import { deviceIdValidator, emailValidator, passwordValidator } from '../../../shared/core/Validators';
+import { deviceIdValidator, emailValidator, passwordValidator, integerValidator } from '../../../shared/core/Validators';
 import { useNavigation } from '@react-navigation/native';
 const {height, width} = Dimensions.get("window")
 
@@ -98,10 +98,12 @@ const Login = (props) => {
                   }
                 />
                 <RoseInput
-                    placeholder={"Scan QR for Device Id"}
-                    disabled={true}
+                    placeholder={"Scan QR or Enter Device Id"}
+                    // disabled={true}
                     value={deviceId.value}
-                    onChangeText={nextValue => setDeviceId({ value: nextValue, error: '' })}
+                    onChangeText={nextValue => {
+                      let a = integerValidator(nextValue)
+                      setDeviceId({ value: a, error: '' })}}
                     status={deviceId.error == '' ? false : true}
                     errorMessage={deviceId.error}
                     loader={
@@ -113,7 +115,9 @@ const Login = (props) => {
                     }
                 />
             </View>
-            <Text category='s1' style={styles.forget}>Forget Password?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("ForgetPassword")}>
+              <Text category='s1' style={styles.forget}>Forget Password?</Text>
+            </TouchableOpacity>
             <View style={styles.buttons}>
               <RoseButton
                 label="Login"
@@ -182,7 +186,8 @@ const styles = StyleSheet.create({
     },
     forget:{
         alignSelf:'flex-end',
-        marginTop:2
+        marginTop:2,
+        color:"#3c2bf0",
     },
     buttons:{
         alignItems:'center',
@@ -195,6 +200,6 @@ const styles = StyleSheet.create({
       alignSelf:'center'
     },
     signup:{
-      color:"#0000EE",
+      color:"#3c2bf0",
     }
 });

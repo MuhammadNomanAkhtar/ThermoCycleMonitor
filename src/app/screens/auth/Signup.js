@@ -6,7 +6,7 @@ import RoseInput from '../../components/Elements/RoseInput';
 import { images } from '../../assets/pngs/ImagesList';
 import RoseButton from '../../components/Elements/RoseButton';
 import { SignUp } from '../../../shared/firebase/FirebaseAuthentication';
-import { deviceIdValidator, emailValidator, passwordValidator } from '../../../shared/core/Validators';
+import { deviceIdValidator, emailValidator, integerValidator, passwordValidator } from '../../../shared/core/Validators';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 
@@ -27,14 +27,14 @@ const Signup = (props) => {
   const handleSignup = async() =>{
     let emailerror = emailValidator(email.value);
     let passworderror = passwordValidator(password.value);
-    let deviceIderror = deviceIdValidator(deviceId.value);
+    // let deviceIderror = deviceIdValidator(deviceId.value);
     let confirmpwdError = {value: confirmPassword.value, error: (confirmPassword.value == password.value)? "" : "Should be same as Password"};
     setEmail(emailerror);
     setPassword(passworderror);
-    setDeviceId(deviceIderror);
+    // setDeviceId(deviceIderror);
     setConfirmPassword(confirmpwdError);
 
-    if (emailerror.error == '' && passworderror.error == '' && confirmpwdError.error == '' && deviceIderror.error == '' && payload != null) {
+    if (emailerror.error == '' && passworderror.error == '' && confirmpwdError.error == '') {
       setLoading(true)
       console.log("Payload before:",payload)
       let res = await SignUp(email.value, password.value, deviceId.value, payload)
@@ -139,11 +139,13 @@ const Signup = (props) => {
                     </TouchableOpacity>
                   }
                 />
-                <RoseInput
-                    placeholder={"Scan QR for Device Id"}
-                    disabled={true}
+                {/* <RoseInput
+                    placeholder={"Scan QR or Enter Device Id"}
+                    // disabled={true}
                     value={deviceId.value}
-                    onChangeText={nextValue => setDeviceId({ value: nextValue, error: '' })}
+                    onChangeText={nextValue => {
+                      let a = integerValidator(nextValue)
+                      setDeviceId({ value: a, error: '' })}}
                     status={deviceId.error == '' ? false : true}
                     errorMessage={deviceId.error}
                     loader={
@@ -153,7 +155,7 @@ const Signup = (props) => {
                         <Image source={images.scannerGrey} style={styles.icon} />
                       </TouchableOpacity>
                     }
-                />
+                /> */}
             </View>
             <View style={styles.buttons}>
               <RoseButton
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
         // flexDirection:'row',
         justifyContent:'space-between',
         width:'100%',
-        height:'30%',
+        height:'23%',
     },
     icon:{ 
       width: 20, 
@@ -236,6 +238,6 @@ const styles = StyleSheet.create({
       alignSelf:'center'
     },
     signup:{
-      color:"#0000EE",
+      color:"#3c2bf0",
     }
 });
