@@ -5,3 +5,5 @@ export {default as Home} from './home/Home';
 export {default as Scanner} from './home/Scanner'
 export {default as AddDetails} from './home/AddDetails'
 export {default as ForgetPassword} from './auth/ForgetPassword'
+export {default as AdminHome} from './home/adminHome'
+export {default as AddUser} from './home/AddUser'

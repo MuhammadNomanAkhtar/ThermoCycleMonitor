@@ -5,48 +5,67 @@ import Colors from '../../../shared/constants/Colors';
 import RoseInput from '../../components/Elements/RoseInput';
 import { images } from '../../assets/pngs/ImagesList';
 import RoseButton from '../../components/Elements/RoseButton';
-import { SignIn } from '../../../shared/firebase/FirebaseAuthentication';
-import { deviceIdValidator, emailValidator, passwordValidator, integerValidator } from '../../../shared/core/Validators';
-import { useNavigation } from '@react-navigation/native';
+import { SignUpUser } from '../../../shared/firebase/FirebaseAuthentication';
+import { deviceIdValidator, emailValidator, integerValidator, passwordValidator } from '../../../shared/core/Validators';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import moment from 'moment';
+
 const {height, width} = Dimensions.get("window")
 
-const Login = (props) => {
+const AddUser = (props) => {
+
   const navigation = useNavigation()
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
+  const [confirmPassword, setConfirmPassword] = useState({ value: "", error: "" });
   const [deviceId, setDeviceId] = useState({ value: "", error: "" });
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [cPasswordVisible, setCPasswordVisible] = useState(false);
+  const [payload, setPayload] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async() =>{
+  const handleAddUser = async() =>{
     let emailerror = emailValidator(email.value);
     let passworderror = passwordValidator(password.value);
-    let deviceIderror = deviceIdValidator(deviceId.value);
+    // let deviceIderror = deviceIdValidator(deviceId.value);
+    let confirmpwdError = {value: confirmPassword.value, error: (confirmPassword.value == password.value)? "" : "Should be same as Password"};
     setEmail(emailerror);
     setPassword(passworderror);
-    setDeviceId(deviceIderror)
+    // setDeviceId(deviceIderror);
+    setConfirmPassword(confirmpwdError);
 
-    if (emailerror.error == '' && passworderror.error == '' && deviceIderror.error == '') {
+    if (emailerror.error == '' && passworderror.error == '' && confirmpwdError.error == '') {
       setLoading(true)
-      let res = await SignIn(email.value, password.value, deviceId.value)
-      if(res != null){
-        if(res.role.toLowerCase() == "admin")
-        navigation.navigate("AdminHome",{data: res, deviceId:deviceId.value})
-        else
-        navigation.navigate("Home",{data: res, deviceId:deviceId.value})
-        setLoading(false)
+      let payload = {
+        clinical_device : "General Closure # Test",
+        cycle_datetime : moment(new Date()).format("DD/MM/YYYY HH:mm"), 
+        email: email.value,
+        facility : "Test Research Center",
+        technician : "Test Technician", 
+        temp : "25", 
+        time : "30",
+        role: "user"
       }
-      else{
-        setLoading(false)
-      }
+      console.log("Payload before:",payload)
+      let res = await SignUpUser(email.value, password.value, deviceId.value, payload)
+      if(res != null)
+        {
+          navigation.navigate("AdminHome")
+          setLoading(false)
+        }
+        else{
+          setLoading(false)
+        }
     }
   }
-  useEffect(()=>{
-    if(props?.route?.params?.deviceId != null)
-      {
-        setDeviceId({value:props?.route?.params?.deviceId, error:""})
-      }
-  },[props])
+  useFocusEffect(
+    React.useCallback(() => {
+      if(props?.route?.params)
+        { let data = props?.route?.params
+          setDeviceId({ value: data?.nextDeviceId.toString(), error: "" })
+        }
+    }, [props])
+  );
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -101,44 +120,57 @@ const Login = (props) => {
                   }
                 />
                 <RoseInput
+                  value={confirmPassword.value}
+                  onChangeText={nextValue =>
+                    setConfirmPassword({ value: nextValue, error: '' })}
+                  secureTextEntry={!cPasswordVisible}
+                  status={confirmPassword.error == '' ? false : true}
+                  errorMessage={confirmPassword.error}
+                  placeholder={'Confirm password here'}
+                  loader={
+                    <TouchableOpacity 
+                    onPress={() => setCPasswordVisible(!cPasswordVisible) }
+                    >
+                      <Icon
+                        style={styles.icon}
+                        name={  cPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
+                        fill={'grey'}
+                      />
+                    </TouchableOpacity>
+                  }
+                />
+                <RoseInput
                     placeholder={"Scan QR or Enter Device Id"}
-                    // disabled={true}
+                    disabled={true}
                     value={deviceId.value}
                     onChangeText={nextValue => {
                       let a = integerValidator(nextValue)
                       setDeviceId({ value: a, error: '' })}}
                     status={deviceId.error == '' ? false : true}
                     errorMessage={deviceId.error}
-                    loader={
-                      <TouchableOpacity onPress={()=>{
-                        navigation.navigate("Scanner",{type: "Login"})
-                      }}>
-                        <Image source={images.scannerGrey} style={styles.icon} />
-                      </TouchableOpacity>
-                    }
+                    loader={<Image source={images.scannerGrey} style={styles.icon} />}
                 />
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("ForgetPassword")}>
-              <Text category='s1' style={styles.forget}>Forget Password?</Text>
-            </TouchableOpacity>
             <View style={styles.buttons}>
-              <RoseButton
-                label="Login"
-                onPress={() => handleLogin()}
-                // width={190}
-                disabled={loading ? true : false}
-                isLoading={loading}
-              />
+                <RoseButton
+                    label="Close"
+                    onPress={() => navigation.navigate("AdminHome")}
+                    // width={190}
+                    disabled={loading ? true : false}
+                />
+                <RoseButton
+                    label="Add"
+                    onPress={() => handleAddUser()}
+                    // width={190}
+                    disabled={loading ? true : false}
+                    isLoading={loading}
+                />
             </View>
-            <Divider style={styles.divider}/>
-            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-              <Text category='s1' style={styles.signupmain}>Don't have an account! <Text category='s1' style={styles.signup}>Signup</Text></Text>
-            </TouchableOpacity>
         </View>
     </SafeAreaView>
   );
 };
-export default Login;
+export default AddUser;
 
 const styles = StyleSheet.create({
     container:{
@@ -181,7 +213,7 @@ const styles = StyleSheet.create({
         // flexDirection:'row',
         justifyContent:'space-between',
         width:'100%',
-        height:'23%',
+        height:'30%',
     },
     icon:{ 
       width: 20, 
@@ -189,10 +221,11 @@ const styles = StyleSheet.create({
     },
     forget:{
         alignSelf:'flex-end',
-        marginTop:2,
-        color:"#3c2bf0",
+        marginTop:2
     },
     buttons:{
+        flexDirection:'row',
+        alignSelf:'flex-end',
         alignItems:'center',
         marginTop:20,
     },
