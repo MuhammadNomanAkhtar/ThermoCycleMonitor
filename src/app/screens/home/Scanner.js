@@ -17,16 +17,19 @@ const Scanner = (props) => {
     setIsLoading(true)
     setScanned(true);
     Vibration.vibrate();
+    // console.log(typeof(e.data),"Scanner Response:",e.data)
     try {
-      const scannedData = e.data;
-      console.log(typeof(e.data),"Scanner Response:",JSON.parse(scannedData))
+      // const scannedData = e.data;
+      // console.log(typeof(e.data),"Scanner Response:",JSON.parse(scannedData))
       let obj = e.data
+      const jsonString = obj?.replace(/(\w+):/g, '"$1":');
+      // console.log(typeof(JSON.parse(jsonString)),"Scanner Response obj:",jsonString)
       // if(props?.route?.params?.type == "Login" || props?.route?.params?.type == "AddDetails")
       // {
       //   obj = {
       //     deviceId: e.data
       //   }
-      // }
+
       // else if(props?.route?.params?.type == "Signup")
       // {
       //   // obj = {
@@ -40,7 +43,8 @@ const Scanner = (props) => {
       //   obj = e.data
       // }
       if(obj != null)
-      navigation.navigate(props?.route?.params?.type, JSON.parse(obj))
+      navigation.navigate(props?.route?.params?.type, JSON.parse(jsonString))
+      // navigation.navigate(props?.route?.params?.type, JSON.parse(obj))
     } catch (error) {
       setIsLoading(false)
       setScanned(false);
@@ -58,7 +62,6 @@ const Scanner = (props) => {
           <View style={{ width: '100%', height: height*10/100, backgroundColor: Colors.primary }}>
             <SafeAreaView>
               <View style={{ padding: 10,paddingTop:20 }}>
-            {/* <CopilotLogo/> */}
               </View>
             </SafeAreaView>
             <View style={{ padding: 10, marginLeft: 10, flexDirection:'row', justifyContent:'space-between' }}>

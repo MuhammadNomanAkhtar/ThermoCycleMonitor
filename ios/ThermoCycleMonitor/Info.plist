@@ -31,6 +31,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ThermoCycleMonitor wants to access your Gallery to save QR Code</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>ThermoCycleMonitor wants to access your Gallery to save QR Code</string>
 	<key>NSCameraUsageDescription</key>
 	<string>ThermoCycleMonitor wants to access your camera for QR Code scanning</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -49,5 +53,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>ThermoCycleMonitor wants to access your storage to download QR Code</string>
 </dict>
 </plist>

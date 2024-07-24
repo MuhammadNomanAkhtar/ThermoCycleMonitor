@@ -15,6 +15,9 @@ const Login = (props) => {
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
   const [deviceId, setDeviceId] = useState({ value: "", error: "" });
+  // const [email, setEmail] = useState({ value: "muhammadnomanakhtar5526@gmail.com", error: "" });
+  // const [password, setPassword] = useState({ value: "Moon.5526", error: "" });
+  // const [deviceId, setDeviceId] = useState({ value: "1105", error: "" });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +47,8 @@ const Login = (props) => {
   useEffect(()=>{
     if(props?.route?.params?.deviceId != null)
       {
-        setDeviceId({value:props?.route?.params?.deviceId, error:""})
+        console.log("ree:",props?.route?.params?.deviceId)
+        setDeviceId({value: props?.route?.params?.deviceId, error:""})
       }
   },[props])
   return (
@@ -103,7 +107,7 @@ const Login = (props) => {
                 <RoseInput
                     placeholder={"Scan QR or Enter Device Id"}
                     // disabled={true}
-                    value={deviceId.value}
+                    value={deviceId.value.toString()}
                     onChangeText={nextValue => {
                       let a = integerValidator(nextValue)
                       setDeviceId({ value: a, error: '' })}}

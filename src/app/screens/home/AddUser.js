@@ -1,6 +1,6 @@
 import { Divider, Icon, Text } from '@ui-kitten/components';
-import React, { useEffect, useState } from 'react';
-import {Dimensions, SafeAreaView, StyleSheet, TouchableOpacity, View, Image, Alert} from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {Dimensions, SafeAreaView, StyleSheet, TouchableOpacity, View, Image, Alert, PermissionsAndroid, Platform, Linking} from 'react-native';
 import Colors from '../../../shared/constants/Colors';
 import RoseInput from '../../components/Elements/RoseInput';
 import { images } from '../../assets/pngs/ImagesList';
@@ -8,7 +8,12 @@ import RoseButton from '../../components/Elements/RoseButton';
 import { SignUpUser } from '../../../shared/firebase/FirebaseAuthentication';
 import { deviceIdValidator, emailValidator, integerValidator, passwordValidator } from '../../../shared/core/Validators';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import QRCode from 'react-native-qrcode-svg';
+import RNFS from 'react-native-fs';
+import ViewShot from 'react-native-view-shot';
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import moment from 'moment';
+import RoseIcon from '../../components/Elements/RoseIcon';
 
 const {height, width} = Dimensions.get("window")
 
@@ -23,6 +28,8 @@ const AddUser = (props) => {
   const [cPasswordVisible, setCPasswordVisible] = useState(false);
   const [payload, setPayload] = useState(null);
   const [loading, setLoading] = useState(false);
+  const svgRef = useRef()
+  const viewShotRef = useRef();
 
   const handleAddUser = async() =>{
     let emailerror = emailValidator(email.value);
@@ -66,6 +73,108 @@ const AddUser = (props) => {
         }
     }, [props])
   );
+  const saveQRCodeToFileSystem = async (uri) => {
+    // Extract the base64 data from the URI
+    console.log(uri)
+    const base64Data = uri.replace(/^data:image\/png;base64,/, '');
+
+    // Define the path to save the file
+    const filePath = `${RNFS.ExternalDirectoryPath}/qrcode.png`;
+
+    try {
+      // Write the base64 data to the file
+      await RNFS.writeFile(filePath, base64Data, 'base64');
+      Alert.alert('Success', `File saved to ${filePath}`);
+    } catch (err) {
+      console.error('Error saving file', err);
+      Alert.alert('Error', 'Failed to save file. Please try again.');
+    }
+  };
+
+  const captureQRCode = () => {
+    viewShotRef.current.capture().then(uri => {
+      saveQRCodeToFileSystem(uri);
+    });
+  };
+  // const requestStoragePermission = async () => {
+  //   if (Platform.OS === 'android') {
+  //     try {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  //         {
+  //           title: 'Storage Permission Required',
+  //           message: 'This app needs access to your storage to download files.',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonNegative: 'Cancel',
+  //           buttonPositive: 'OK',
+  //         }
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         return true;
+  //       } else if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+  //         Alert.alert(
+  //           'Permission Denied',
+  //           'Storage permission is required to save the QR code. Please enable it from the app settings.',
+  //           [
+  //             { text: 'Cancel', style: 'cancel' },
+  //             { text: 'Open Settings', onPress: () => Linking.openSettings() },
+  //           ]
+  //         );
+  //       } else {
+  //         Alert.alert(
+  //           'Permission Denied',
+  //           'Storage permission is required to save the QR code. Please enable it from settings.',
+  //           [{ text: 'OK' }]
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.warn(err);
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // };
+
+  // const saveQRCodeToGallery = async (uri) => {
+  //   const permission = await requestStoragePermission();
+  //   if (!permission) return;
+
+  //   const filePath = `${RNFS.DocumentDirectoryPath}/qrcode.png`;
+
+  //   RNFS.writeFile(filePath, uri, 'base64')
+  //     .then(() => {
+  //       console.log('File saved to', filePath);
+
+  //       if (Platform.OS === 'android') {
+  //         // CameraRoll.save(filePath, 'photo')
+  //         CameraRoll.save(filePath, {type: 'photo'})
+  //           .then(() => {
+  //             console.log('QR code saved to gallery');
+  //           })
+  //           .catch(err => {
+  //             console.log('Error saving to gallery', err);
+  //           });
+  //       } else {
+  //         CameraRoll.save(filePath, { type: 'photo' })
+  //           .then(() => {
+  //             console.log('QR code saved to gallery');
+  //           })
+  //           .catch(err => {
+  //             console.log('Error saving to gallery', err);
+  //           });
+  //       }
+  //     })
+  //     .catch(err => {
+  //       console.log('Error saving file', err);
+  //     });
+  // };
+
+  // const captureQRCode = () => {
+  //   viewShotRef.current.capture().then(uri => {
+  //     console.log('Captured', uri);
+  //     saveQRCodeToGallery(uri);
+  //   });
+  // };
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -80,6 +189,12 @@ const AddUser = (props) => {
             /> */}
         </View>
         <View style={styles.body}>
+            <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1.0 }} style={styles.qr}>
+              <QRCode
+                value={`{deviceId:${deviceId.value}}`}
+                size={100}
+              />
+            </ViewShot>
             <View style={styles.fields}>
                 <RoseInput
                     placeholder={"Enter email here"}
@@ -165,6 +280,11 @@ const AddUser = (props) => {
                     disabled={loading ? true : false}
                     isLoading={loading}
                 />
+                <TouchableOpacity 
+                    style= {styles.baricon}
+                    onPress={() => captureQRCode()}>
+                    <Icon name={'download-outline'} style={styles.logout} fill={"#fff"}/>
+                </TouchableOpacity>
             </View>
         </View>
     </SafeAreaView>
@@ -207,7 +327,13 @@ const styles = StyleSheet.create({
         borderTopLeftRadius:25,
         borderTopRightRadius:25,
         padding:20,
-        justifyContent:'center',
+        // justifyContent:'center',
+    },
+    qr:{
+      alignItems:'center',
+      justifyContent:'center',
+      height:'20%',
+      marginVertical:40
     },
     fields:{
         // flexDirection:'row',
@@ -237,5 +363,17 @@ const styles = StyleSheet.create({
     },
     signup:{
       color:"#3c2bf0",
-    }
+    },
+    baricon:{
+      borderRadius: 5,
+      justifyContent: 'center',
+      alignItems:'center',
+      height: 40,
+      width: 40,
+      backgroundColor: Colors.primary,
+    },
+    logout:{
+      height:30,
+      width:30
+    },
 });
