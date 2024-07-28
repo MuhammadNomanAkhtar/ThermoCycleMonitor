@@ -42,7 +42,7 @@ const Home = (props) => {
          database()
           .ref(`/devices/${res}`)
           .on('value', snapshot => {
-            console.log('User data: ', snapshot.val());
+            // console.log('User data: ', snapshot.val());
             let data = snapshot.val()
             if(data){
             setClinicalDevice(data?.clinical_device)
@@ -81,12 +81,14 @@ const Home = (props) => {
             <View style={styles.bar}>
                 <RoseInput
                     placeholder={"Time"}
+                    disabled={true}
                     // value={headerSearch}
                     width={'40%'}
                     // onChangeText={nextValue => setHeaderSearch(nextValue)}
                 />
                 <RoseInput
                     placeholder={"Temp"}
+                    disabled={true}
                     // value={headerSearch}
                     width={'40%'}
                     // onChangeText={nextValue => setHeaderSearch(nextValue)}
@@ -95,22 +97,26 @@ const Home = (props) => {
             <View style={styles.bar}>
                 <RoseInput
                     placeholder={"Device"}
+                    disabled={true}
                     // value={headerSearch}
                     width={'40%'}
                     // onChangeText={nextValue => setHeaderSearch(nextValue)}
                 />
                 <TouchableOpacity 
                     style= {styles.baricon}
+                    disabled={true}
                     onPress={() => Alert.alert("Called")}>
                     <Icon name={'search'} style={styles.logout} fill={"#fff"}/>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style= {styles.baricon}
+                    disabled={true}
                     onPress={() => Alert.alert("Called")}>
                     <Icon name={'refresh'} style={styles.logout} fill={"#fff"}/>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style= {styles.baricon}
+                    disabled={true}
                     onPress={() => Alert.alert("Called")}>
                     <Icon name={'printer-outline'} style={styles.logout} fill={"#fff"}/>
                 </TouchableOpacity>
@@ -193,7 +199,9 @@ const styles = StyleSheet.create({
     },
     role:{
         color:'#000',
-        marginTop:5
+        marginTop:5,
+        fontWeight:'bold',
+        fontSize:16
     },
     logout:{
         height:30,

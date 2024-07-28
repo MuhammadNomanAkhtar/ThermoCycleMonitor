@@ -53,7 +53,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>ThermoCycleMonitor wants to access your storage to download QR Code</string>
 </dict>
 </plist>

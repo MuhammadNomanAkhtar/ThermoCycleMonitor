@@ -14,6 +14,8 @@ import ViewShot from 'react-native-view-shot';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import moment from 'moment';
 import RoseIcon from '../../components/Elements/RoseIcon';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import FileViewer from "react-native-file-viewer";
 
 const {height, width} = Dimensions.get("window")
 
@@ -73,29 +75,164 @@ const AddUser = (props) => {
         }
     }, [props])
   );
-  const saveQRCodeToFileSystem = async (uri) => {
-    // Extract the base64 data from the URI
-    console.log(uri)
-    const base64Data = uri.replace(/^data:image\/png;base64,/, '');
+  // const saveQRCodeToFileSystem = async (uri) => {
+  //   // Extract the base64 data from the URI
+  //   const base64Data = uri.replace(/^data:image\/png;base64,/, '');
 
-    // Define the path to save the file
-    const filePath = `${RNFS.ExternalDirectoryPath}/qrcode.png`;
+  //   // Define the path to save the file
+  //   const filePath = `${RNFS.ExternalDirectoryPath}/qrcode.png`;
 
+  //   console.log(uri+"<<file path>>"+filePath)
+  //   try {
+  //     // Write the base64 data to the file
+  //     await RNFS.writeFile(filePath, base64Data, 'base64');
+  //     Alert.alert('Success', `File saved to ${filePath}`);
+  //   } catch (err) {
+  //     console.error('Error saving file', err);
+  //     Alert.alert('Error', 'Failed to save file. Please try again.');
+  //   }
+  // };
+
+  // const captureQRCode = () => {
+  //   viewShotRef.current.capture().then(uri => {
+  //     saveQRCodeToFileSystem(uri);
+  //   });
+  // };
+
+  // const requestStoragePermission = async () => {
+  //   const permission =
+  //     Platform.OS === 'ios' ? PERMISSIONS.IOS.PHOTO_LIBRARY_ADD_ONLY : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+      
+  //   try {
+  //     const result = await request(permission);
+  //     alert("per"+result)
+  //     return result === RESULTS.GRANTED;
+  //   } catch (err) {
+  //     console.warn(err);
+  //     return false;
+  //   }
+  // };
+
+  // const saveQRCodeToFileSystem = async (uri) => {
+  //   const base64Data = uri.replace(/^data:image\/png;base64,/, '');
+  //   const filePath = `${RNFS.DocumentDirectoryPath}/qrcode.png`;
+
+  //   console.log(uri + "<<file path>>" + filePath);
+
+  //   try {
+  //     await RNFS.writeFile(filePath, base64Data, 'base64');
+  //     Alert.alert('Success', `File saved to ${filePath}`);
+  //   } catch (err) {
+  //     console.error('Error saving file', err);
+  //     Alert.alert('Error', 'Failed to save file. Please try again.');
+  //   }
+  // };
+
+  // const captureQRCode = async () => {
+  //   const permission = await requestStoragePermission();
+  //   if (!permission) return;
+
+  //   viewShotRef.current.capture().then(uri => {
+  //     saveQRCodeToFileSystem(uri);
+  //   });
+  // };
+
+
+  // const handleDownloadPDF = async (base64) => {
+  //   try {
+  //     // const path = RNFS.DocumentDirectoryPath+'/InziLava.pdf';
+  //     // if(Platform.OS==="ios")
+  //     // {
+  //     const path =
+  //       Platform.OS === 'ios'
+  //         ? RNFS.DocumentDirectoryPath +
+  //           `/${
+  //             props.route.params.title +
+  //             moment(new Date()).format('DDMMMYYYY_HH.mm')
+  //           }.pdf`
+  //         : RNFS.DownloadDirectoryPath +
+  //           `/${
+  //             (props.route.params.title).trim() +
+  //             moment(new Date()).format('DDMMMYYYY_HH.mm')
+  //           }.pdf`;
+  //     //     }
+  //     //     else
+  //     //    {
+  //     //         const path = RNFS.DownloadDirectoryPath+`/${props.route.params.title}.pdf`;
+  //     //     }
+  //     // const path = '/storage/android/data/test.pdf';
+  //     const base64Content = base64.replace(
+  //       /^data:application\/pdf;base64,/,
+  //       '',
+  //     );
+
+  //     await RNFS.writeFile(path, base64Content, 'base64');
+  //     console.log(`Saved to ${path?.replace(/ /g, '')}`);
+  //     // Linking.openURL(path)
+  //     Alert.alert(
+  //       '',
+  //       `File Downloaded Successfully at ${
+  //         Platform.OS == 'ios'
+  //           ? `Files/On My Iphone/Myindici 2.0/${
+  //               props.route.params.title +
+  //               moment(new Date()).format('DDMMMYYYY_HH.mm')
+  //             }.pdf`
+  //           : path
+  //       }`,
+  //       [
+  //         {
+  //           text: 'Ok',
+  //           onPress: () => {
+  //             // FileViewer.open(path?.replace(/ /g, ""))  old code
+  //             FileViewer.open(path);
+  //           },
+  //         },
+  //       ],
+  //     );
+  //     // Alert.alert('', `File Downloaded Successfully at ${path}`, [
+  //     //     {
+  //     //       text: 'Ok',
+  //     //       onPress: () => {
+  //     //         FileViewer.open(path?.replace(/ /g, ""))
+  //     //       },
+  //     //     },
+  //     //   ]);
+
+  //     return path;
+  //   } catch (error) {
+  //     console.error(error);
+  //     return null;
+  //   }
+  // };
+  const handleDownloadImage = async (base64) => {
     try {
-      // Write the base64 data to the file
-      await RNFS.writeFile(filePath, base64Data, 'base64');
-      Alert.alert('Success', `File saved to ${filePath}`);
-    } catch (err) {
-      console.error('Error saving file', err);
-      Alert.alert('Error', 'Failed to save file. Please try again.');
+      // const path = RNFS.DocumentDirectoryPath+'/InziLava.pdf';
+      const path =
+        Platform.OS === 'ios' ? RNFS.DocumentDirectoryPath +`/${deviceId.value}.png`
+          : 
+          RNFS.DownloadDirectoryPath +`/${deviceId.value}.png`;
+      const base64Content = base64.replace( /^data:application\/pdf;base64,/, '');
+      await RNFS.writeFile(path, base64Content, 'base64');
+      // console.log(`Saved to ${path}`);
+      // Linking.openURL(path)
+      // alert("Image downloaded at:"+path)
+      Alert.alert('', `QR Downloaded Successfully`
+        , [
+        {
+          text: 'Ok',
+          onPress: () => {
+            FileViewer.open(path);
+          },
+        },
+      ]
+    );
+      return path;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   };
 
-  const captureQRCode = () => {
-    viewShotRef.current.capture().then(uri => {
-      saveQRCodeToFileSystem(uri);
-    });
-  };
   // const requestStoragePermission = async () => {
   //   if (Platform.OS === 'android') {
   //     try {
@@ -169,12 +306,13 @@ const AddUser = (props) => {
   //     });
   // };
 
-  // const captureQRCode = () => {
-  //   viewShotRef.current.capture().then(uri => {
-  //     console.log('Captured', uri);
-  //     saveQRCodeToGallery(uri);
-  //   });
-  // };
+  const captureQRCode = () => {
+    viewShotRef.current.capture().then(uri => {
+      // console.log('Captured', uri);
+      handleDownloadImage(uri)
+      // saveQRCodeToGallery(uri);
+    });
+  };
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -189,7 +327,7 @@ const AddUser = (props) => {
             /> */}
         </View>
         <View style={styles.body}>
-            <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1.0 }} style={styles.qr}>
+            <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 1.0, result: 'base64'  }} style={styles.qr}>
               <QRCode
                 value={`{deviceId:${deviceId.value}}`}
                 size={100}

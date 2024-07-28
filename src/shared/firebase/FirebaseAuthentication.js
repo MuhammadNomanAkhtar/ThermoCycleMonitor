@@ -25,7 +25,7 @@ export const SignIn = async(email, pwd, deviceId) => {
             Alert.alert("Invalid Device Id!")
         }
         else{
-            Alert.alert("Logged In Successfully!")
+            // Alert.alert("Logged In Successfully!")
             setUserAsyncData(deviceId)
             result = snapshot.val()
             console.log("reeee:",result)
